@@ -1,0 +1,52 @@
+body {
+    font-family: "open sans", sans-serif;
+    /*margin-to bring the content from left corner to center*/
+    margin: 0 auto;
+    padding: 20px;
+    width: 600px;
+}
+
+h1 {
+    /*bring voting dapp to center*/
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    /*for width*/
+    /*to remove the gap between each table line*/
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    /*table size*/
+    border: 1px solid #ccc;
+    /*create table in grey color*/
+}
+
+/*to give even row diff color.syntax is nth-child(even)*/
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+input {
+    padding: 8px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    /*button text color*/
+    margin: 30px;
+    /*to bring th button little bit down*/
+    background-color: #107ff6;
+    border: none;
+    /*to remove the black color border of the button*/
+}
+
+.btn:hover {
+    background-color: #0069;
+    outline: none;
+}
