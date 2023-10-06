@@ -1,0 +1,167 @@
+//connect with metamask
+const web3 = new Web3(window.ethereum)
+//store account
+var account;
+//interact with contract-ABI(says the library that i have these methods.using these methods u can transact or speak),deployed address
+//enter the address of the deployed conract
+const contractAddr = "0xf42F8e6323EE7067dDaF9eB149cC688021D1227e"
+//enter the saved ABI 
+const ABI = [
+    {
+        "inputs": [
+            {
+                "internalType": "string[]",
+                "name": "_candidateName",
+                "type": "string[]"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_candidateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "vote",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "candidateCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "candidates",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "voteCount",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_candidateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getVoteCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "hasVoted",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
+//create instance for contract to call
+const contract = new web3.eth.Contract(ABI, contractAddr);
+
+//perform action only after completely loading the webpages(html)
+document.addEventListener("DOMContentLoaded", function () {
+    //connect with metamask
+    //if (metamask is installed then get permission to connect to metamask)
+    if (window.ethereum) {
+        ethereum.request({ method: "eth_requestAccounts" }).then((accounts) => {
+            //to connect to account,it display two action -accept,
+            console.log(accounts)
+            account = accounts[0];//returns all the accounts in the metamask
+            console.log(account)
+        })
+
+    }
+    //if metamask is not installed
+    else {
+        console.error("Install Metamask");
+    }
+    //connect with contract and call
+    //get candidate name
+    //below are for line 27 in remix
+    contract.methods.candidateCount().call().then((e) => {  //function only reads-.call , if function change the state eg function vote in remix contract - .send
+        for (var i = 1; i <= e; i++) {
+            contract.methods.candidates(i).call().then((f) => {
+                console.log(f)
+                document.getElementById(f.id).innerHTML = f.name;//f -returns struct id
+                document.getElementById("candidate" + f.id).innerHTML = f.voteCount;
+                console.log(f.voteCount)
+
+            })
+        }
+    })
+
+})
+//voting button line 49 in html page
+function vote() {
+    var candidateId = document.getElementById("candidate").value;//get value from input field
+    const transaction = {
+        from: account,
+        to: contractAddr,
+        data: contract.methods.vote(candidateId).encodeABI(), //line 55 in remix
+        gas: 320000
+    }
+
+    web3.eth.sendTransaction(transaction).on("transactionHash", function (hash) {//on - after completing transaction ,t waits until paticular value is got
+        console.log("transaction Hash: ", hash)
+
+    }).on("error", function (error) {
+        console.error(error)
+    })
+}
